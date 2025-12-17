@@ -2,7 +2,9 @@ import express from "express";
 import dbConnection from "./db.mjs";
 import cors from "cors";
 import cookieSession from "cookie-session";
-import { process } from 'dotenv';
+import dotenv from "dotenv";
+
+dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
@@ -162,4 +164,4 @@ app.delete("/cart/items/:id", (req, res) => {
   }
 });
 
-app.listen(PORT)
+app.listen(PORT);
