@@ -1,8 +1,8 @@
 import express from "express";
-import dbConnection from "./db.js";
+import dbConnection from "./db.mjs";
 import cors from "cors";
 import cookieSession from "cookie-session";
-import process from 'dotenv';
+import { process } from 'dotenv';
 
 const app = express();
 const PORT = process.env.PORT || 5000;
