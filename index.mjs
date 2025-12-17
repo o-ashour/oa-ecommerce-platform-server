@@ -29,8 +29,7 @@ try {
 
 app.post("/products", async (req, res) => {
   try {
-    await dbConnection.query("ALTER TABLE Purchased_Items ADD FOREIGN KEY (product_id) REFERENCES Products(id);")
-    await dbConnection.query("ALTER TABLE Purchased_Items ADD FOREIGN KEY (order_id) REFERENCES Orders(id);")
+    await dbConnection.query("DESCRIBE Purchased_Items;")
   } catch (error) {
     console.error(error)
   }
