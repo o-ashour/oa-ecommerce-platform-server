@@ -29,11 +29,12 @@ try {
 
 app.post("/products", async (req, res) => {
   try {
-    await dbConnection.query("DESCRIBE Purchased_Items;")
+    const result = await dbConnection.query("DESCRIBE Purchased_Items;")
+    res.send(result);
   } catch (error) {
     console.error(error)
+    res.sendStatus(500)
   }
-  res.end();
 })
 
 app.get("/products", async (req, res) => {
