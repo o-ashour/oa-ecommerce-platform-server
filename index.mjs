@@ -3,7 +3,6 @@ import dbConnection from "./db.mjs";
 import cors from "cors";
 import cookieSession from "cookie-session";
 import dotenv from "dotenv";
-import fs from "fs/promises";
 
 dotenv.config();
 
@@ -28,29 +27,15 @@ try {
   console.error(error);
 }
 
-async function loadData(path) {
-  try {
-    const raw = await fs.readFile(path, "utf-8");
-    return JSON.parse(raw);
-  } catch (error) {
-    console.error(error);
-    throw error;
-  }
-}
-
 app.post("/products", async (req, res) => {
   try {
-    const data = await loadData("./data.json");
-    data.forEach(async (product) => {
-      await dbConnection.query(
-        `INSERT INTO Products VALUES (${product.id}, '${product.name}', '${product.category}', ${product.price}, ${product.stock}, '${product.image}')`
-      );
-    });
+    await dbConnection.query("ALTER TABLE Purchased_Items ADD FOREIGN KEY (product_id) REFERENCES Products(id);")
+    await dbConnection.query("ALTER TABLE Purchased_Items ADD FOREIGN KEY (order_id) REFERENCES Orders(id);")
   } catch (error) {
-    console.error(error);
+    console.error(error)
   }
   res.end();
-});
+})
 
 app.get("/products", async (req, res) => {
   try {
