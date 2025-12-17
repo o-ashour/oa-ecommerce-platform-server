@@ -29,13 +29,18 @@ try {
 
 app.post("/products", async (req, res) => {
   try {
-    const result = await dbConnection.query("DESCRIBE Purchased_Items;")
-    res.send(result);
+    const response1 = await dbConnection.query(
+      "ALTER TABLE Purchased_Items ADD CONSTRAINT FK_ProductId FOREIGN KEY (product_id) REFERENCES Products(id);"
+    );
+    const response2 = await dbConnection.query(
+      "ALTER TABLE Purchased_Items ADD CONSTRAINT FK_OrderId FOREIGN KEY (order_id) REFERENCES Orders(id);"
+    );
+    res.send({ response1, response2 });
   } catch (error) {
-    console.error(error)
-    res.sendStatus(500)
+    console.error(error);
+    res.sendStatus(500);
   }
-})
+});
 
 app.get("/products", async (req, res) => {
   try {
