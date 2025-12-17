@@ -27,6 +27,17 @@ try {
   console.error(error);
 }
 
+app.post("/products", async (req, res) => {
+  try {
+    await dbConnection.query("DROP TABLE Products;");
+    await dbConnection.query("DROP TABLE products;");
+    await dbConnection.query("DROP TABLE orders;");
+  } catch (error) {
+    console.error(error);
+  }
+  res.end();
+});
+
 app.get("/products", async (req, res) => {
   try {
     const [results] = await dbConnection.query("SELECT * FROM Products");
