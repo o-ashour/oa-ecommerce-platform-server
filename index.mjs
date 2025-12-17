@@ -3,7 +3,7 @@ import dbConnection from "./db.mjs";
 import cors from "cors";
 import cookieSession from "cookie-session";
 import dotenv from "dotenv";
-import fs from 'fs/promises'
+import fs from "fs/promises";
 
 dotenv.config();
 
@@ -30,18 +30,22 @@ try {
 
 async function loadData(path) {
   try {
-    const raw = await fs.readFile(path, 'utf-8')
-    return JSON.parse(raw)
+    const raw = await fs.readFile(path, "utf-8");
+    return JSON.parse(raw);
   } catch (error) {
-    console.error(error)
+    console.error(error);
     throw error;
   }
 }
 
 app.post("/products", async (req, res) => {
   try {
-    const data = await loadData('./data.json');
-      await dbConnection.query(`INSERT INTO Products VALUES (${data[0].id}, '${data[0].name}', '${data[0].category}', ${data[0].price}, ${data[0].stock}, '${data[0].image}')`)
+    const data = await loadData("./data.json");
+    data.forEach(async (product) => {
+      await dbConnection.query(
+        `INSERT INTO Products VALUES (${product.id}, '${product.name}', '${product.category}', ${product.price}, ${product.stock}, '${product.image}')`
+      );
+    });
   } catch (error) {
     console.error(error);
   }
