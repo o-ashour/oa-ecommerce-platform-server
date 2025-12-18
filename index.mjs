@@ -28,16 +28,6 @@ app.get("/products", async (req, res) => {
 });
 
 app.post("/checkout", async (req, res) => {
-  try {
-    await dbConnection.query('ALTER TABLE Orders DROP session_id;')
-  } catch (error) {
-    console.error(error)
-  }
-  try {
-    await dbConnection.query('ALTER TABLE Purchased_Items DROP session_id;')
-  } catch (error) {
-    console.error(error)
-  }
   const { cart, subtotal } = req.body;
 
   try {
