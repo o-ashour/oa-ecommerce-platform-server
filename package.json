@@ -4,7 +4,6 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
-    "build": "npm install && node index.mjs",
     "start": "node index.mjs"
   },
   "keywords": [],
