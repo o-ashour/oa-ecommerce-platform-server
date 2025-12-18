@@ -1,12 +1,20 @@
 import express from "express";
 import dbConnection from "./db.mjs";
 import cors from "cors";
+// import cookieSession from "cookie-session";
 import dotenv from "dotenv";
 
 dotenv.config();
 
 const app = express();
 const PORT = process.env.PORT || 5000;
+
+// app.use(
+//   cookieSession({
+//     name: process.env.COOKIE_SESSION_NAME,
+//     keys: [process.env.COOKIE_SESSION_KEY1, process.env.COOKIE_SESSION_KEY2],
+//   })
+// );
 
 app.use(express.json());
 app.use(cors({ origin: process.env.CLIENT_URL, credentials: true }));
@@ -29,10 +37,13 @@ app.get("/products", async (req, res) => {
 
 app.post("/checkout", async (req, res) => {
   const { cart, subtotal } = req.body;
+  const regex = /session=\w+=*;*/;
+  const sessionId = req.headers.cookie?.match(regex)[0].slice(8);
+  let orderId;
 
   try {
     const [result] = await dbConnection.query(
-      `INSERT INTO Orders (subtotal) VALUES (${subtotal});`
+      `INSERT INTO Orders (subtotal, session_id) VALUES (${subtotal}, '${sessionId}');`
     );
     orderId = result.insertId;
   } catch (error) {
@@ -43,7 +54,7 @@ app.post("/checkout", async (req, res) => {
   cart.forEach(async (item) => {
     try {
       await dbConnection.query(
-        `INSERT INTO Purchased_Items (product_id, quantity, order_id) VALUES (${item.id}, ${item.qtyInCart}, ${orderId})`
+        `INSERT INTO Purchased_Items (product_id, quantity, order_id, session_id) VALUES (${item.id}, ${item.qtyInCart}, ${orderId}, '${sessionId}')`
       );
     } catch (error) {
       console.error(error);
@@ -63,5 +74,93 @@ app.post("/checkout", async (req, res) => {
   req.session.cart = [];
   res.sendStatus(201);
 });
+
+// app.get("/cart", (req, res) => {
+//   try {
+//     console.log(req.session);
+//     if (!req.session.cart) res.sendStatus(404);
+//     res.json(req.session.cart).status(200);
+//   } catch (error) {
+//     console.error(error);
+//     res.sendStatus(500);
+//   }
+// });
+
+// app.post("/cart", (req, res) => {
+//   try {
+//     req.session.cart = [];
+//     res.json(req.session.cart).status(201);
+//   } catch (error) {
+//     console.error(error);
+//     res.sendStatus(500);
+//   }
+// });
+
+// app.post("/cart/items", (req, res) => {
+//   try {
+//     if (!req.session.cart) res.send("No session found").status(400);
+//     req.session.cart = [...req.session.cart, { ...req.body, qtyInCart: 1 }];
+//     res.sendStatus(201);
+//   } catch (error) {
+//     console.error(error);
+//     res.sendStatus(500);
+//   }
+// });
+
+// app.put("/cart/items/:id", (req, res) => {
+//   try {
+//     if (!req.session.cart) res.send("No session found").status(400);
+//     const cart = req.session.cart;
+//     const foundProduct = cart.find(
+//       (item) => item.id === parseInt(req.params.id)
+//     );
+
+//     if (!foundProduct) {
+//       res.sendStatus(404);
+//     }
+
+//     const filteredCart = req.session.cart?.filter(
+//       (item) => item !== foundProduct
+//     );
+//     req.session.cart = [
+//       ...filteredCart,
+//       { ...foundProduct, qtyInCart: foundProduct.qtyInCart + 1 },
+//     ];
+//     res.sendStatus(204);
+//   } catch (error) {
+//     console.error(error);
+//     res.sendStatus(500);
+//   }
+// });
+
+// app.delete("/cart/items/:id", (req, res) => {
+//   if (!req.session.cart) res.send("No session found").status(400);
+//   try {
+//     const cart = req.session.cart;
+//     const foundProduct = cart.find(
+//       (item) => item.id === parseInt(req.params.id)
+//     );
+
+//     if (!foundProduct) {
+//       res.sendStatus(404);
+//     }
+
+//     const filteredCart = req.session.cart?.filter(
+//       (item) => item !== foundProduct
+//     );
+//     if (foundProduct.qtyInCart <= 1) {
+//       req.session.cart = filteredCart;
+//     } else {
+//       req.session.cart = [
+//         ...filteredCart,
+//         { ...foundProduct, qtyInCart: foundProduct.qtyInCart - 1 },
+//       ];
+//     }
+//     res.sendStatus(204);
+//   } catch (error) {
+//     console.error(error);
+//     res.sendStatus(500);
+//   }
+// });
 
 app.listen(PORT);
