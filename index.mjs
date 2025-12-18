@@ -31,35 +31,35 @@ app.post("/checkout", async (req, res) => {
   const { cart, subtotal } = req.body;
 
   try {
-    const [result] = await dbConnection.query(
+    await dbConnection.query(
       `INSERT INTO Orders (subtotal) VALUES (${subtotal});`
     );
-    console.log(result.insertId)
-    // orderId = result.insertId;
   } catch (error) {
     console.error(error);
     res.sendStatus(500);
   }
 
-  // cart.forEach(async (item) => {
-  //   try {
-  //     await dbConnection.query(
-  //       `INSERT INTO Purchased_Items (product_id, quantity, order_id) VALUES (${item.id}, ${item.qtyInCart}, ${orderId})`
-  //     );
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // });
+  const orderId = new Date.now();
+  
+  cart.forEach(async (item) => {
+    try {
+      await dbConnection.query(
+        `INSERT INTO Purchased_Items (product_id, quantity, order_id) VALUES (${item.id}, ${item.qtyInCart}, ${orderId})`
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  });
 
-  // cart.forEach(async (item) => {
-  //   try {
-  //     await dbConnection.query(
-  //       `UPDATE Products SET stock = stock - ${item.qtyInCart} WHERE id = ${item.id};`
-  //     );
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // });
+  cart.forEach(async (item) => {
+    try {
+      await dbConnection.query(
+        `UPDATE Products SET stock = stock - ${item.qtyInCart} WHERE id = ${item.id};`
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  });
 
   res.sendStatus(201);
 });
