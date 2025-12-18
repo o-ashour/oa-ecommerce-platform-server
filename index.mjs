@@ -71,7 +71,7 @@ app.post("/checkout", async (req, res) => {
     }
   });
 
-  req.session.cart = [];
+  // req.session.cart = [];
   res.sendStatus(201);
 });
 
