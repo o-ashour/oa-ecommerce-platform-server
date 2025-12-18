@@ -14,7 +14,7 @@ app.set("trust proxy", 1);
 app.use(
   cookieSession({
     name: process.env.COOKIE_SESSION_NAME,
-    keys: [process.env.COOKIE_SESSION_KEY1, process.env.COOKIE_SESSION_KEY1],
+    keys: [process.env.COOKIE_SESSION_KEY1, process.env.COOKIE_SESSION_KEY2],
   })
 );
 
@@ -39,7 +39,7 @@ app.get("/products", async (req, res) => {
 
 app.post("/checkout", async (req, res) => {
   const { cart, subtotal } = req.body;
-  const regex = /session=\w+=*;/;
+  const regex = /session=\w+=*;*/;
   const sessionId = req.headers.cookie?.match(regex)[0].slice(8);
   let orderId;
 
