@@ -29,13 +29,10 @@ try {
 
 app.post("/products", async (req, res) => {
   try {
-    const response1 = await dbConnection.query(
-      "ALTER TABLE Purchased_Items ADD CONSTRAINT FK_ProductId FOREIGN KEY (product_id) REFERENCES Products(id);"
+    const response = await dbConnection.query(
+      "CREATE TABLE Purchased_Items (id INT NOT NULL AUTO_INCREMENT, product_id INT NOT_NULL, quantity INT, order_id INT NOT_NULL, session_id LONGTEXT, PRIMARY KEY(id), FOREIGN KEY(product_id) REFERENCES Products(id) ON DELETE CASCADE, FOREIGN KEY(order_id) REFERENCES Orders(id) ON DELETE CASCADE);"
     );
-    const response2 = await dbConnection.query(
-      "ALTER TABLE Purchased_Items ADD CONSTRAINT FK_OrderId FOREIGN KEY (order_id) REFERENCES Orders(id);"
-    );
-    res.send({ response1, response2 });
+    res.send(response);
   } catch (error) {
     console.error(error);
     res.sendStatus(500);
