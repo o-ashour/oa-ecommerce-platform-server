@@ -31,6 +31,19 @@ app.post("/checkout", async (req, res) => {
   const { cart, subtotal } = req.body;
   const orderId = Date.now();
 
+
+  try {
+    await dbConnection.query('CREATE TABLE Orders (id BIGINT NOT NULL, subtotal FLOAT, PRIMARY KEY (id));')
+  } catch (error) {
+    console.error(error);
+  }
+
+  try {
+    await dbConnection('CREATE TABLE Purchased_Items (id INT NOT NULL AUTO_INCREMENT, product_id INT, order_id BIGINT, quantity INT, FOREIGN KEY (product_id) REFERENCES Products(id) ON DELETE CASCADE, FOREIGN KEY (order_id) REFERENCES Orders(id) ON DELETE CASCADE);')
+  } catch (error) {
+    console.error(error)
+  }
+
   try {
     const result = await dbConnection.query('DESCRIBE Orders;')
     console.log(result)
