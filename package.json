@@ -4,6 +4,7 @@
   "main": "index.js",
   "type": "module",
   "scripts": {
+    "build": "npm install && node index.mjs",
     "start": "node index.mjs"
   },
   "keywords": [],
@@ -11,7 +12,6 @@
   "license": "ISC",
   "description": "",
   "dependencies": {
-    "cookie-session": "^2.1.1",
     "cors": "^2.8.5",
     "dotenv": "^17.2.3",
     "express": "^5.2.1",
