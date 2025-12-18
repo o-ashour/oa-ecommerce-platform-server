@@ -3,6 +3,7 @@ import dbConnection from "./db.mjs";
 import cors from "cors";
 import cookieSession from "cookie-session";
 import dotenv from "dotenv";
+import fs from "fs/promises";
 
 dotenv.config();
 
@@ -27,26 +28,27 @@ try {
   console.error(error);
 }
 
+async function loadData(path) {
+  try {
+    const raw = await fs.readFile(path, "utf8");
+    return JSON.parse(raw);
+  } catch (error) {
+    console.error("Failed to load JSON:", err);
+    throw err;
+  }
+}
+
 app.post("/products", async (req, res) => {
-  let result1, result2, result3;
-  try {
-    result1 = await dbConnection.query("DESCRIBE Products;");
-  } catch (error) {
-    console.error(error);
-  }
-
-  try {
-    result2 = await dbConnection.query('DESCRIBE Orders;');
-  } catch (error) {
-    console.error(error);
-  }
-
-  try {
-    result3 = await dbConnection.query('DESCRIBE Purchased_Items;');
-  } catch (error) {
-    console.error(error);
-  }
-  res.send({result1, result2, result3});
+  const data = await loadData("./data.json");
+  data.forEach(async (product) => {
+    try {
+      await dbConnection.query(
+        `INSERT INTO Products VALUES (${product.id}, '${product.name}', '${product.category}', ${product.price}, ${product.stock}, '${product.image}');`
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  });
 });
 
 app.get("/products", async (req, res) => {
