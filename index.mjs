@@ -3,7 +3,6 @@ import dbConnection from "./db.mjs";
 import cors from "cors";
 import cookieSession from "cookie-session";
 import dotenv from "dotenv";
-import fs from "fs/promises";
 
 dotenv.config();
 
@@ -27,37 +26,6 @@ try {
 } catch (error) {
   console.error(error);
 }
-
-async function loadData(path) {
-  try {
-    const raw = await fs.readFile(path, "utf8");
-    return JSON.parse(raw);
-  } catch (error) {
-    console.error("Failed to load JSON:", err);
-    throw err;
-  }
-}
-
-app.post("/products", async (req, res) => {
-  const data = await loadData('./data.json')
-
-  data.forEach(async (product) => {
-    try {
-      await dbConnection.query(
-        `UPDATE Products SET price = ${product.price} WHERE id = ${product.id};`
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  });
-
-  try {
-    await dbConnection.query('DELETE FROM Products WHERE id > 50 LIMIT 50;')
-  } catch (error) {
-    console.error(error)
-  }
-  res.end();
-});
 
 app.get("/products", async (req, res) => {
   try {
