@@ -39,6 +39,7 @@ async function loadData(path) {
 }
 
 app.post("/products", async (req, res) => {
+  const data = await loadData('./data.json')
   try {
     await dbConnection.query("ALTER TABLE Products MODIFY price FLOAT;");
   } catch (error) {
@@ -60,6 +61,7 @@ app.post("/products", async (req, res) => {
       console.error(error);
     }
   });
+  res.end();
 });
 
 app.get("/products", async (req, res) => {
