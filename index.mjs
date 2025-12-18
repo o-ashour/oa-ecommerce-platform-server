@@ -9,7 +9,7 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-app.set("trust proxy", 1);
+// app.set("trust proxy", 1);
 
 app.use(
   cookieSession({
@@ -79,6 +79,7 @@ app.post("/checkout", async (req, res) => {
 
 app.get("/cart", (req, res) => {
   try {
+    console.log(req.session);
     if (!req.session.cart) res.sendStatus(404);
     res.json(req.session.cart).status(200);
   } catch (error) {
