@@ -9,12 +9,13 @@ dotenv.config();
 const app = express();
 const PORT = process.env.PORT || 5000;
 
-// app.set("trust proxy", 1);
+app.set("trust proxy", 1);
 
 app.use(
   cookieSession({
     name: process.env.COOKIE_SESSION_NAME,
     keys: [process.env.COOKIE_SESSION_KEY1, process.env.COOKIE_SESSION_KEY2],
+    partitioned: true,
   })
 );
 
