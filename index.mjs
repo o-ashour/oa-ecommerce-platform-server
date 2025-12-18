@@ -34,7 +34,7 @@ app.post("/checkout", async (req, res) => {
     const [result] = await dbConnection.query(
       `INSERT INTO Orders (subtotal) VALUES (${subtotal});`
     );
-    console.log(result)
+    console.log(result.insertId)
     // orderId = result.insertId;
   } catch (error) {
     console.error(error);
