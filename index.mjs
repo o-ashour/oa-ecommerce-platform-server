@@ -28,14 +28,21 @@ app.get("/products", async (req, res) => {
 });
 
 app.post("/checkout", async (req, res) => {
+  try {
+    await dbConnection.query('ALTER TABLE Orders DROP session_id;')
+  } catch (error) {
+    console.error(error)
+  }
+  try {
+    await dbConnection.query('ALTER TABLE Purchased_Items DROP session_id;')
+  } catch (error) {
+    console.error(error)
+  }
   const { cart, subtotal } = req.body;
-  const regex = /session=\w+=*;*/;
-  const sessionId = req.headers.cookie?.match(regex)[0].slice(8);
-  let orderId;
 
   try {
     const [result] = await dbConnection.query(
-      `INSERT INTO Orders (subtotal, session_id) VALUES (${subtotal}, '${sessionId}');`
+      `INSERT INTO Orders (subtotal) VALUES (${subtotal});`
     );
     orderId = result.insertId;
   } catch (error) {
@@ -46,7 +53,7 @@ app.post("/checkout", async (req, res) => {
   cart.forEach(async (item) => {
     try {
       await dbConnection.query(
-        `INSERT INTO Purchased_Items (product_id, quantity, order_id, session_id) VALUES (${item.id}, ${item.qtyInCart}, ${orderId}, '${sessionId}')`
+        `INSERT INTO Purchased_Items (product_id, quantity, order_id) VALUES (${item.id}, ${item.qtyInCart}, ${orderId})`
       );
     } catch (error) {
       console.error(error);
