@@ -31,56 +31,35 @@ app.post("/checkout", async (req, res) => {
   const { cart, subtotal } = req.body;
   const orderId = Date.now();
 
-
   try {
-    await dbConnection.query('CREATE TABLE Purchased_Items (id INT NOT NULL AUTO_INCREMENT, product_id INT NOT NULL, order_id BIGINT NOT NULL, quantity INT, PRIMARY KEY (id), FOREIGN KEY (product_id) REFERENCES Products(id) ON DELETE CASCADE, FOREIGN KEY (order_id) REFERENCES Orders(id) ON DELETE CASCADE);')
+    await dbConnection.query(
+      `INSERT INTO Orders (id, subtotal) VALUES (${orderId}, ${subtotal});`
+    );
   } catch (error) {
-    console.error(error)
+    console.error(error);
+    res.sendStatus(500);
   }
 
-  try {
-    const [result] = await dbConnection.query('DESCRIBE Orders;')
-    console.log(result)
-  } catch (error) {
-    console.error(error)
-  }
 
-  try {
-    const [result] = await dbConnection.query('DESCRIBE Purchased_Items;')
-    console.log(result)
-  } catch (error) {
-    console.error(error)
-  }
+  cart.forEach(async (item) => {
+    try {
+      await dbConnection.query(
+        `INSERT INTO Purchased_Items (product_id, quantity, order_id) VALUES (${item.id}, ${item.qtyInCart}, ${orderId})`
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  });
 
-  // try {
-  //   await dbConnection.query(
-  //     `INSERT INTO Orders (id, subtotal) VALUES (${orderId}, ${subtotal});`
-  //   );
-  // } catch (error) {
-  //   console.error(error);
-  //   res.sendStatus(500);
-  // }
-
-
-  // cart.forEach(async (item) => {
-  //   try {
-  //     await dbConnection.query(
-  //       `INSERT INTO Purchased_Items (product_id, quantity, order_id) VALUES (${item.id}, ${item.qtyInCart}, ${orderId})`
-  //     );
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // });
-
-  // cart.forEach(async (item) => {
-  //   try {
-  //     await dbConnection.query(
-  //       `UPDATE Products SET stock = stock - ${item.qtyInCart} WHERE id = ${item.id};`
-  //     );
-  //   } catch (error) {
-  //     console.error(error);
-  //   }
-  // });
+  cart.forEach(async (item) => {
+    try {
+      await dbConnection.query(
+        `UPDATE Products SET stock = stock - ${item.qtyInCart} WHERE id = ${item.id};`
+      );
+    } catch (error) {
+      console.error(error);
+    }
+  });
 
   res.sendStatus(201);
 });
