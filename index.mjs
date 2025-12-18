@@ -39,11 +39,22 @@ async function loadData(path) {
 }
 
 app.post("/products", async (req, res) => {
-  const data = await loadData("./data.json");
+  try {
+    await dbConnection.query("ALTER TABLE Products MODIFY price FLOAT;");
+  } catch (error) {
+    console.error(error);
+  }
+
+  try {
+    await dbConnection.query("ALTER TABLE Orders MODIFY subtotal FLOAT;");
+  } catch (error) {
+    console.error(error);
+  }
+
   data.forEach(async (product) => {
     try {
       await dbConnection.query(
-        `INSERT INTO Products VALUES (${product.id}, '${product.name}', '${product.category}', ${product.price}, ${product.stock}, '${product.image}');`
+        `INSERT INTO Products (price) VALUES(${product.price});`
       );
     } catch (error) {
       console.error(error);
