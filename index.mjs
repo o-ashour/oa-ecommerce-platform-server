@@ -39,8 +39,8 @@ app.post("/checkout", async (req, res) => {
     res.sendStatus(500);
   }
 
-  const orderId = new Date.now();
-  
+  const orderId = Date.now();
+
   cart.forEach(async (item) => {
     try {
       await dbConnection.query(
