@@ -30,36 +30,47 @@ app.get("/products", async (req, res) => {
 app.post("/checkout", async (req, res) => {
   const { cart, subtotal } = req.body;
 
+  // try {
+  //   await dbConnection.query(
+  //     `INSERT INTO Orders (subtotal) VALUES (${subtotal});`
+  //   );
+  // } catch (error) {
+  //   console.error(error);
+  //   res.sendStatus(500);
+  // }
+
   try {
-    await dbConnection.query(
-      `INSERT INTO Orders (subtotal) VALUES (${subtotal});`
-    );
+    await dbConnection.query('ALTER TABLE Orders MODIFY id BIGINT;')
   } catch (error) {
-    console.error(error);
-    res.sendStatus(500);
+    console.error(error)
+  }
+  try {
+    await dbConnection.query('ALTER TABLE Purchased_Items MODIFY order_id BIGINT;')
+  } catch (error) {
+    console.error(error)
   }
 
-  const orderId = Date.now();
+  // const orderId = Date.now();
 
-  cart.forEach(async (item) => {
-    try {
-      await dbConnection.query(
-        `INSERT INTO Purchased_Items (product_id, quantity, order_id) VALUES (${item.id}, ${item.qtyInCart}, ${orderId})`
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  });
+  // cart.forEach(async (item) => {
+  //   try {
+  //     await dbConnection.query(
+  //       `INSERT INTO Purchased_Items (product_id, quantity, order_id) VALUES (${item.id}, ${item.qtyInCart}, ${orderId})`
+  //     );
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // });
 
-  cart.forEach(async (item) => {
-    try {
-      await dbConnection.query(
-        `UPDATE Products SET stock = stock - ${item.qtyInCart} WHERE id = ${item.id};`
-      );
-    } catch (error) {
-      console.error(error);
-    }
-  });
+  // cart.forEach(async (item) => {
+  //   try {
+  //     await dbConnection.query(
+  //       `UPDATE Products SET stock = stock - ${item.qtyInCart} WHERE id = ${item.id};`
+  //     );
+  //   } catch (error) {
+  //     console.error(error);
+  //   }
+  // });
 
   res.sendStatus(201);
 });
