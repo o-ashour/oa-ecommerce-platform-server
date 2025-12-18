@@ -28,7 +28,7 @@ function validateCheckout(req, res, next) {
     if (!item.qtyInCart || !Number(item.qtyInCart)) {
       return res.sendStatus(400);
     }
-    if (!item.subtotal || !Number(subtotal)) {
+    if (!subtotal || !Number(subtotal)) {
       return res.sendStatus(400);
     }
   });
