@@ -33,26 +33,20 @@ app.post("/checkout", async (req, res) => {
 
 
   try {
-    await dbConnection.query('CREATE TABLE Orders (id BIGINT NOT NULL, subtotal FLOAT, PRIMARY KEY (id));')
-  } catch (error) {
-    console.error(error);
-  }
-
-  try {
-    await dbConnection('CREATE TABLE Purchased_Items (id INT NOT NULL AUTO_INCREMENT, product_id INT, order_id BIGINT, quantity INT, FOREIGN KEY (product_id) REFERENCES Products(id) ON DELETE CASCADE, FOREIGN KEY (order_id) REFERENCES Orders(id) ON DELETE CASCADE);')
+    await dbConnection.query('CREATE TABLE Purchased_Items (id INT NOT NULL AUTO_INCREMENT, product_id INT, order_id BIGINT, quantity INT, FOREIGN KEY (product_id) REFERENCES Products(id) ON DELETE CASCADE, FOREIGN KEY (order_id) REFERENCES Orders(id) ON DELETE CASCADE);')
   } catch (error) {
     console.error(error)
   }
 
   try {
-    const result = await dbConnection.query('DESCRIBE Orders;')
+    const [result] = await dbConnection.query('DESCRIBE Orders;')
     console.log(result)
   } catch (error) {
     console.error(error)
   }
 
   try {
-    const result = await dbConnection.query('DESCRIBE Purchased_Items;')
+    const [result] = await dbConnection.query('DESCRIBE Purchased_Items;')
     console.log(result)
   } catch (error) {
     console.error(error)
