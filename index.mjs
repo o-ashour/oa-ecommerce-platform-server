@@ -15,6 +15,25 @@ try {
   await dbConnection.connect();
 } catch (error) {
   console.error(error);
+  sendStatus(500);
+}
+
+function validateCheckout(req, res, next) {
+  const { cart, subtotal } = req.body;
+
+  cart.forEach((item) => {
+    if (!item.id || !Number(item.id)) {
+      return res.sendStatus(400);
+    }
+    if (!item.qtyInCart || !Number(item.qtyInCart)) {
+      return res.sendStatus(400);
+    }
+    if (!item.subtotal || !Number(subtotal)) {
+      return res.sendStatus(400);
+    }
+  });
+
+  next();
 }
 
 app.get("/products", async (req, res) => {
@@ -27,7 +46,7 @@ app.get("/products", async (req, res) => {
   }
 });
 
-app.post("/checkout", async (req, res) => {
+app.post("/checkout", validateCheckout, async (req, res) => {
   const { cart, subtotal } = req.body;
   const orderId = Date.now();
 
@@ -40,7 +59,6 @@ app.post("/checkout", async (req, res) => {
     res.sendStatus(500);
   }
 
-
   cart.forEach(async (item) => {
     try {
       await dbConnection.query(
@@ -48,6 +66,7 @@ app.post("/checkout", async (req, res) => {
       );
     } catch (error) {
       console.error(error);
+      res.sendStatus(500);
     }
   });
 
@@ -58,6 +77,7 @@ app.post("/checkout", async (req, res) => {
       );
     } catch (error) {
       console.error(error);
+      res.sendStatus(500);
     }
   });
 
