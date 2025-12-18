@@ -31,7 +31,7 @@ app.post("/checkout", async (req, res) => {
   const { cart, subtotal } = req.body;
 
   try {
-    const result = await dbConnection.query(
+    const [result] = await dbConnection.query(
       `INSERT INTO Orders (subtotal) VALUES (${subtotal});`
     );
     console.log(result)
