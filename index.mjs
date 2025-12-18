@@ -33,7 +33,7 @@ app.post("/checkout", async (req, res) => {
 
 
   try {
-    await dbConnection.query('CREATE TABLE Purchased_Items (id INT NOT NULL AUTO_INCREMENT, product_id INT, order_id BIGINT, quantity INT, FOREIGN KEY (product_id) REFERENCES Products(id) ON DELETE CASCADE, FOREIGN KEY (order_id) REFERENCES Orders(id) ON DELETE CASCADE);')
+    await dbConnection.query('CREATE TABLE Purchased_Items (id INT NOT NULL AUTO_INCREMENT, product_id INT NOT_NULL, order_id BIGINT NOT_NULL, quantity INT, FOREIGN KEY (product_id) REFERENCES Products(id) ON DELETE CASCADE, FOREIGN KEY (order_id) REFERENCES Orders(id) ON DELETE CASCADE);')
   } catch (error) {
     console.error(error)
   }
