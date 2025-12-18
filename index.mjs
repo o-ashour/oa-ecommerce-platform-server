@@ -30,7 +30,7 @@ try {
 app.post("/products", async (req, res) => {
   try {
     const response = await dbConnection.query(
-      "CREATE TABLE Purchased_Items (id INT NOT NULL AUTO_INCREMENT, product_id INT NOT_NULL, quantity INT, order_id INT NOT_NULL, session_id LONGTEXT, PRIMARY KEY(id), FOREIGN KEY(product_id) REFERENCES Products(id) ON DELETE CASCADE, FOREIGN KEY(order_id) REFERENCES Orders(id) ON DELETE CASCADE);"
+      "CREATE TABLE Purchased_Items (id INT NOT NULL AUTO_INCREMENT, product_id INT NOT NULL, quantity INT, order_id INT NOT_NULL, session_id LONGTEXT, PRIMARY KEY(id), FOREIGN KEY(product_id) REFERENCES Products(id) ON DELETE CASCADE, FOREIGN KEY(order_id) REFERENCES Orders(id) ON DELETE CASCADE);"
     );
     res.send(response);
   } catch (error) {
