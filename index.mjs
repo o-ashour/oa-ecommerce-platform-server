@@ -29,14 +29,35 @@ try {
 
 app.post("/products", async (req, res) => {
   try {
-    const response = await dbConnection.query(
-      "CREATE TABLE Purchased_Items (id INT NOT NULL AUTO_INCREMENT, product_id INT NOT NULL AUTO_INCREMENT, quantity INT, order_id INT NOT NULL AUTO_INCREMENT, session_id LONGTEXT, PRIMARY KEY(id), FOREIGN KEY(product_id) REFERENCES Products(id) ON DELETE CASCADE, FOREIGN KEY(order_id) REFERENCES Orders(id) ON DELETE CASCADE);"
-    );
-    res.send(response);
+    await dbConnection.query("ALTER TABLE Products RENAME products");
   } catch (error) {
     console.error(error);
-    res.sendStatus(500);
   }
+
+  try {
+    await dbConnection.query(
+      "CREATE TABLE Products(id INT NOT NULL AUTO_INCREMENT, name VARCHAR(100), category VARCHAR(50), price DECIMAL, stock INT, image VARCHAR(100), PRIMARY KEY(id));"
+    );
+  } catch (error) {
+    console.error(error);
+  }
+
+  try {
+    await dbConnection.query(
+      "CREATE TABLE Orders(id INT NOT NULL AUTO_INCREMENT, subtotal DECIMAL, session_id LONGTEXT, PRIMARY KEY(id));"
+    );
+  } catch (error) {
+    console.error(error);
+  }
+
+  try {
+    await dbConnection.query(
+      "CREATE TABLE Purchased_Items (id INT NOT NULL AUTO_INCREMENT, product_id INT, quantity INT, order_id INT, session_id LONGTEXT, PRIMARY KEY(id), FOREIGN KEY(product_id) REFERENCES Products(id) ON DELETE CASCADE, FOREIGN KEY(order_id) REFERENCES Orders(id) ON DELETE CASCADE);"
+    );
+  } catch (error) {
+    console.error(error);
+  }
+  res.end();
 });
 
 app.get("/products", async (req, res) => {
