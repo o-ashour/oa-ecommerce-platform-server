@@ -16,6 +16,7 @@ app.use(
     name: process.env.COOKIE_SESSION_NAME,
     keys: [process.env.COOKIE_SESSION_KEY1, process.env.COOKIE_SESSION_KEY2],
     partitioned: true,
+    sameSite: "lax"
   })
 );
 
