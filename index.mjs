@@ -3,7 +3,7 @@ import dbConnection from "./db.mjs";
 import cors from "cors";
 import dotenv from "dotenv";
 import { getProducts, processOrder } from "./controllers.mjs";
-import { validateOrder } from "./utils";
+import { validateOrder } from "./utils.mjs";
 
 dotenv.config();
 
