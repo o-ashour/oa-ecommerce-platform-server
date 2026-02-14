@@ -3,12 +3,6 @@ import dotenv from "dotenv";
 
 dotenv.config();
 
-const dbConnection = await mysql.createConnection({
-  host: process.env.MYSQLHOST,
-  user: process.env.MYSQLUSER,
-  password: process.env.MYSQLPASSWORD,
-  database: process.env.MYSQLDATABASE,
-  port: process.env.MYSQLPORT,
-});
+const dbConnection = await mysql.createConnection(process.env.MYSQL_PUBLIC_URL);
 
 export default dbConnection;
