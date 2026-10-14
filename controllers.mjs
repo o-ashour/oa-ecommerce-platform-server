@@ -1,6 +1,6 @@
 import pool from "./db.mjs";
 
-const saveOrder = async (orderId, subtotal) => {
+const saveOrder = async (orderId, subtotal, res) => {
   try {
     await pool.query(
       `INSERT INTO Orders (id, subtotal) VALUES (${orderId}, ${subtotal});`
@@ -11,7 +11,7 @@ const saveOrder = async (orderId, subtotal) => {
   }
 };
 
-const savePurchasedItems = async (cart, orderId) => {
+const savePurchasedItems = async (cart, orderId, res) => {
   cart.forEach(async (item) => {
     try {
       await pool.query(
@@ -24,7 +24,7 @@ const savePurchasedItems = async (cart, orderId) => {
   });
 };
 
-const updateProductStock = async (cart) => {
+const updateProductStock = async (cart, res) => {
   cart.forEach(async (item) => {
     try {
       await pool.query(
@@ -51,9 +51,9 @@ export const processOrder = async (req, res) => {
   const { cart, subtotal } = req.body;
   const orderId = Date.now();
 
-  saveOrder(orderId, subtotal);
-  savePurchasedItems(cart, orderId);
-  updateProductStock(cart);
+  await saveOrder(orderId, subtotal, res);
+  await savePurchasedItems(cart, orderId, res);
+  await updateProductStock(cart, res);
   
   res.sendStatus(201);
 };
